@@ -30,11 +30,25 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Then install the dev tools and pre-commit hooks:
+Then with the virtual environment activated, install the dev tools and pre-commit hooks:
 
 ```
-python3 -m pip install --user -r requirements-dev.txt
+python3 -m pip install -r requirements-dev.txt
 pre-commit install
+```
+
+To install the requirements for the application from the `uv` generated lock file, run:
+
+```
+uv pip install --strict --requirement requirements.lock
+```
+
+## Updating the lock file
+
+To regenerate the lock file from the high level `requirements.txt` run
+
+```
+uv pip compile requirements.txt --generate-hashes --output-file requirements.lock
 ```
 
 ## Adding code and tests
