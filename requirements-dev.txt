@@ -1,7 +1,11 @@
 -r requirements.txt
+# lint
 pre-commit
 ruff
 black
+# test
 pytest
 coverage
 pytest-cov
+# lock
+uv
