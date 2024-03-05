@@ -7,19 +7,26 @@ import json
 
 import numpy as np
 import pandas as pd
+import yaml
 from scipy.optimize import Bounds, LinearConstraint, milp
 
-MIN_REVIEWS_PER_PERSON = 5
-MAX_REVIEWS_PER_PERSON = 9
-MIN_REVIEWERS_PER_SUBMISSION = 4
-MAX_REVIEWERS_PER_SUBMISSION = 4
-ASSIGN_TUTORIALS_TO_ANYONE = True
-TUTORIAL_COEFF = 0.8
+# TODO: Make this a command line argument
+with open("config.yml") as config_file:
+    config = yaml.safe_load(config_file)
+config = config["config"]
 
-DEBUG = True
+# TODO: Clean this up
+MIN_REVIEWS_PER_PERSON = config["min_reviews_per_person"]
+MAX_REVIEWS_PER_PERSON = config["max_reviews_per_person"]
+MIN_REVIEWERS_PER_SUBMISSION = config["min_reviewers_per_submission"]
+MAX_REVIEWERS_PER_SUBMISSION = config["max_reviewers_per_submission"]
+ASSIGN_TUTORIALS_TO_ANYONE = config["assign_tutorials_to_anyone"]
+TUTORIAL_COEFF = config["tutorial_coeff"]
 
-df_submissions = pd.read_csv("2023_submissions_to_assign.csv")
-df_reviewers = pd.read_csv("2023_reviewers_to_assign.csv")
+DEBUG = config["debug_mode"]
+
+df_submissions = pd.read_csv(config["submissions_input"])
+df_reviewers = pd.read_csv(config["reviewers_input"])
 
 df_submissions = df_submissions.assign(assigned_reviewer_ids=[[]] * len(df_submissions))
 df_reviewers = df_reviewers.assign(assigned_submission_ids=[[]] * len(df_reviewers))
