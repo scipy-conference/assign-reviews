@@ -1,2 +1,5 @@
 scipy  # requires numpy
 pandas
+jupyter
+duckdb
+duckdb_engine
