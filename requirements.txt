@@ -1,5 +1,6 @@
 scipy  # requires numpy
 pandas
-jupyter
+notebook
+jupyterlab
 duckdb
 duckdb_engine
