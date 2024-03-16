@@ -4,3 +4,4 @@ notebook
 jupyterlab
 duckdb
 duckdb_engine
+jupytext

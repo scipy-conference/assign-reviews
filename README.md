@@ -63,6 +63,13 @@ When you're ready to run tests, run:
 python3 -m pytest
 ```
 
+## Using `jupytext` with Jupyter notebooks
+
+[`jupytext`](https://jupytext.readthedocs.io/) allows for easier versioning of Jupyter notebooks by saving all of the information that exists in them in [specially formatted](https://jupytext.readthedocs.io/en/latest/formats-scripts.html#the-percent-format) `.py` files and then generating the notebook representation when you [select them in a Jupyter interface](https://jupytext.readthedocs.io/en/latest/text-notebooks.html#how-to-open-a-text-notebook-in-jupyter-lab).
+Version the `.py` files as you normally would with any other text file.
+To run the `.py` files as Jupyter notebooks, select them in the Jupyter file browser, right click, and then select _Open With → Notebook_.
+Any changes made in a Jupyter notebook will be automatically synced to the [paired](https://jupytext.readthedocs.io/en/latest/paired-notebooks.html) `.py` file.
+
 # File breakdown
 
 Here's a short explanation of each file/folder in this template:
