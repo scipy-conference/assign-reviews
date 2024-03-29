@@ -13,3 +13,5 @@ venv/
 
 # pretlax
 .pretalx.yaml
+
+data/
