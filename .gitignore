@@ -10,3 +10,6 @@ venv/
 *.ipynb
 # pixi environments
 .pixi
+
+# pretlax
+.pretalx.yaml
