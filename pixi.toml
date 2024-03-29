@@ -17,6 +17,7 @@ scipy = ">=1.10.0"
 pandas = ">=2.2.0"
 notebook = ">=7.1.2"
 jupytext = ">=1.10.0"
+tqdm = ">=4.66.0"
 
 [pypi-dependencies]
 duckdb = { version = ">=0.10.0" }
