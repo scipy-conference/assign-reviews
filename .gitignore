@@ -8,3 +8,5 @@ venv/
 *ipynb_checkpoints
 .DS_Store
 *.ipynb
+# pixi environments
+.pixi

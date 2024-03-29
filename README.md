@@ -23,33 +23,50 @@ Locally, you can open it in VS Code with the Dev Containers extension installed.
 
 ## Without devcontainer
 
-If you can't or don't want to use the devcontainer, then you should first create a virtual environment:
+If you can't or don't want to use the devcontainer, then use [`pixi`](https://pixi.sh/) to control the application.
+If you don't have `pixi` installed yet, follow the 1-liner [install command](https://pixi.sh/latest/#installation) for the Rust binary for your operating system.
+
+Then to install the full environment from the multi platform lock file simply just run
 
 ```
-python3 -m venv .venv
-source .venv/bin/activate
+pixi install
 ```
 
-Then with the virtual environment activated, install the dev tools and pre-commit hooks:
+To execute a specific task defined in the [task runner section](https://pixi.sh/latest/advanced/advanced_tasks/) just run
 
 ```
-python3 -m pip install -r requirements-dev.txt
-pre-commit install
+pixi run <task name>
 ```
 
-To install the requirements for the application from the `uv` generated lock file, run:
+So for example, to run all the tests run
 
 ```
-uv pip install --strict --requirement requirements.lock
+pixi run --environment test test
 ```
+
+or to lint
+
+```
+pixi run --environment lint lint
+```
+
+If you would like to have interactive shell access (like a classic virtual environment) run
+
+```
+pixi shell
+```
+
+and you will be dropped into a new shell with the environment activated.
 
 ## Updating the lock file
 
-To regenerate the lock file from the high level `requirements.txt` run
+To regenerate the lock file from the project `pixi.toml` run
 
 ```
-uv pip compile requirements.txt --generate-hashes --output-file requirements.lock
+rm pixi.lock && pixi install
 ```
+
+This will be very fast!
 
 ## Adding code and tests
 
