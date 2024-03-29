@@ -19,10 +19,12 @@
 #     name: python
 #     nbconvert_exporter: python
 #     pygments_lexer: ipython3
-#     version: 3.12.1
+#     version: 3.12.2
 # ---
 
 # %%
+from pathlib import Path
+
 import duckdb
 from IPython import display
 
@@ -38,10 +40,10 @@ raw_files = dict(
 )
 
 # Output
-database_file = "../data/assign_reviews.db"
+database_file = Path.cwd() / ".." / "data" / "assign_reviews.db"
 
 # %%
-con = duckdb.connect(database_file)
+con = duckdb.connect(str(database_file))
 
 
 # %%
@@ -141,7 +143,7 @@ df
 # Reviewers who signed up for pretalx but did not fill in COI
 
 # %%
-con = duckdb.connect(database_file)
+con = duckdb.connect(str(database_file))
 
 # %%
 df = con.sql(
