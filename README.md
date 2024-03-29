@@ -41,13 +41,13 @@ pixi run <task name>
 So for example, to run all the tests run
 
 ```
-pixi run --environment test test
+pixi run test
 ```
 
 or to lint
 
 ```
-pixi run --environment lint lint
+pixi run lint
 ```
 
 If you would like to have interactive shell access (like a classic virtual environment) run

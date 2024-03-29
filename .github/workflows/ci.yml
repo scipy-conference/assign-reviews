@@ -30,4 +30,4 @@ jobs:
 
     - name: Test with pytest and coverage
       run: |
-        pixi run --environment test test
+        pixi run test

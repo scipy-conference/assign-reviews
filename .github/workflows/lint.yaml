@@ -28,8 +28,8 @@ jobs:
 
         - name: Lint with ruff
           run: |
-            pixi run --environment lint ruff
+            pixi run ruff
 
         - name: Check formatting with black
           run: |
-            pixi run --environment lint black
+            pixi run black
