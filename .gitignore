@@ -10,3 +10,5 @@ venv/
 *.ipynb
 # pixi environments
 .pixi
+
+data/
