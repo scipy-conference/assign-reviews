@@ -1,0 +1,44 @@
+[project]
+name = "assign-reviews"
+version = "0.1.0"
+description = "Workflow to assign reviewers for the SciPy Conference"
+authors = [
+    "Guen Prawiroatmodjo <guenevere.p@gmail.com>",
+    "Matthew Feickert <matthew.feickert@cern.ch>"
+]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+
+[tasks]
+
+[dependencies]
+python = "3.12.*"
+scipy = ">=1.10.0"
+pandas = ">=2.2.0"
+notebook = ">=7.1.2"
+jupytext = ">=1.10.0"
+
+[pypi-dependencies]
+duckdb = { version = ">=0.10.0" }
+duckdb-engine = { version = ">=0.11.2" }
+
+[feature.test.tasks]
+test = "coverage run --module pytest tests/"
+
+[feature.test.dependencies]
+pytest = ">=8.0.0"
+coverage = ">=7.0.0"
+
+[feature.lint.tasks]
+lint = "pre-commit run --all-files"
+ruff = "ruff check ."
+black = "black . --check --verbose"
+
+[feature.lint.dependencies]
+pre-commit = ">=3.7.0"
+ruff = ">=0.3.4"
+black = ">=24.3.0"
+
+[environments]
+test = ["test"]
+lint = ["lint"]
