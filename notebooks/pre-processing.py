@@ -361,7 +361,7 @@ select count(*), author from reviewers_with_coi_pre anti join pretalx_speakers o
 con.sql("table reviewers_with_tracks").df()
 
 # %%
-con.sql("select email as reviewer_id, list(track_id) as tracks from reviewers_with_tracks group by email")
+con.sql("select email as reviewer_id, list(track_ids) as tracks from reviewers_with_tracks group by email")
 
 # %% [markdown]
 # # Final tables for script
