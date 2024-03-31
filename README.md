@@ -13,6 +13,25 @@ The checks and tests are all run using Github actions on every pull request and 
 
 This repository is setup for Python 3.11. To customize that, change the `VARIANT` argument in `.devcontainer/devcontainer.json`, change the config options in `.precommit-config.yaml` and change the version number in `.github/workflows/python.yaml`.
 
+## Assign Reviewers
+
+First download the following files from Preltax into the `data/` directory:
+
+* `scipy_reviewers.csv`  # people who signed up as reviewers
+* `sessions.csv`  # all proposal exported from pretalx
+* `speakers.csv`  # all speakers exported from pretalx
+* `pretalx_reviewers.csv`  # all reviewers copy-pasted from pretalx
+* `scipy_coi_export.csv`  # all responses to the coi form
+* `coi_authors.csv`  # copy pasted values of author names from coi form
+* `tracks.csv`  # manually entered track IDs
+
+Then run the notebooks as Python files in the following order with `pixi`
+
+```
+$ pixi run pre-processing
+$ pixi run assignments
+```
+
 ## Development instructions
 
 ## With devcontainer
