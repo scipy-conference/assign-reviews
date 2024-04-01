@@ -15,7 +15,7 @@ This repository is setup for Python 3.11. To customize that, change the `VARIANT
 
 ## Assign Reviewers
 
-First download the following files from Preltax into the `data/` directory:
+First download the following files from Pretalx into the `data/` directory:
 
 * `scipy_reviewers.csv`  # people who signed up as reviewers
 * `sessions.csv`  # all proposal exported from pretalx
