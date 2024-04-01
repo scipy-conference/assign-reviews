@@ -19,16 +19,16 @@
 #     name: python
 #     nbconvert_exporter: python
 #     pygments_lexer: ipython3
-#     version: 3.12.1
+#     version: 3.12.2
 # ---
 
 # %%
 ####################
 ## ASSIGN REVIEWS ##
 ####################
-# Imports
 import json
 import sys
+from pathlib import Path
 
 import duckdb
 import pandas as pd
@@ -40,7 +40,8 @@ from assign_reviews import format_and_output_result, solve_milp
 # # Start script
 
 # %%
-# mkdir output
+output_dir = Path().cwd() / "output"
+output_dir.mkdir(exist_ok=True)
 
 # %%
 ASSIGN_TUTORIALS_TO_ANYONE = False
