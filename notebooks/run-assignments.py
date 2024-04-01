@@ -40,7 +40,8 @@ from assign_reviews import format_and_output_result, solve_milp
 # # Start script
 
 # %%
-output_dir = Path().cwd() / "output"
+data_dir = Path().cwd() / ".." / "data"
+output_dir = Path().cwd() / ".." / "output"
 output_dir.mkdir(exist_ok=True)
 
 # %%
@@ -49,8 +50,8 @@ TUTORIAL_COEFF = 0.8
 
 DEBUG = True
 
-database_file = "../data/assign_reviews.db"
-con = duckdb.connect(database_file)
+database_file = data_dir / "assign_reviews.db"
+con = duckdb.connect(str(database_file))
 df_submissions = con.sql("table submissions_to_assign").df()
 df_reviewers = con.sql("table reviewers_to_assign").df()
 
@@ -83,7 +84,9 @@ solution = solve_milp(
     TUTORIAL_COEFF,
     ASSIGN_TUTORIALS_TO_ANYONE,
 )
-reviewers, submissions = format_and_output_result(df_reviewers, df_submissions_tutorials, solution, post_fix="00")
+reviewers, submissions = format_and_output_result(
+    df_reviewers, df_submissions_tutorials, solution, post_fix="00", output_dir=output_dir
+)
 
 # %%
 df = pd.DataFrame(reviewers)
@@ -142,7 +145,7 @@ solution = solve_milp(
 )
 if solution is not None:
     reviewers, submissions = format_and_output_result(
-        df_reviewers_no_submissions, df_submissions_no_tutorials, solution, post_fix="01"
+        df_reviewers_no_submissions, df_submissions_no_tutorials, solution, post_fix="01", output_dir=output_dir
     )
 
 # %%
@@ -218,7 +221,7 @@ solution = solve_milp(
 
 if solution is not None:
     reviewers, submissions = format_and_output_result(
-        df_reviewers_only_tut, df_submissions_few_reviewers, solution, post_fix="02"
+        df_reviewers_only_tut, df_submissions_few_reviewers, solution, post_fix="02", output_dir=output_dir
     )
 
 # %%
@@ -315,8 +318,8 @@ con.close()
 # ## Final export
 
 # %%
-database_file = "../data/assign_reviews.db"
-con = duckdb.connect(database_file)
+database_file = data_dir / "assign_reviews.db"
+con = duckdb.connect(str(database_file))
 
 # %%
 reviewer_assignments_final = {
@@ -325,7 +328,8 @@ reviewer_assignments_final = {
     .df()[["reviewer_id", "assigned_submission_ids"]]
     .to_dict("records")
 }
-with open("output/reviewer-assignments.json", "w") as fp:
+
+with open(output_dir / "reviewer-assignments.json", "w") as fp:
     fp.write(json.dumps(reviewer_assignments_final, indent=4))
 
 # %%

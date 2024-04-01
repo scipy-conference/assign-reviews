@@ -4,6 +4,7 @@
 ####################
 # Imports
 import json
+from pathlib import Path
 
 import numpy as np
 from scipy.optimize import Bounds, LinearConstraint, milp
@@ -120,7 +121,7 @@ def solve_milp(
 ############################
 ## FORMAT AND OUTPUT DATA ##
 ############################
-def format_and_output_result(df_reviewers, df_submissions, solution, post_fix=""):
+def format_and_output_result(df_reviewers, df_submissions, solution, post_fix="", output_dir=Path.cwd() / "output"):
     reviewers = df_reviewers.to_dict("records")
     submissions = df_submissions.to_dict("records")
 
@@ -140,12 +141,12 @@ def format_and_output_result(df_reviewers, df_submissions, solution, post_fix=""
     if DEBUG:
         result = {reviewer["reviewer_id"]: sorted(reviewer["is_tutorial"]) for reviewer in reviewers}
 
-        with open(f"output/review-assignments-debug{post_fix}.json", "w") as fp:
+        with open(output_dir / f"review-assignments-debug{post_fix}.json", "w") as fp:
             fp.write(json.dumps(result, indent=4))
 
     result = {reviewer["reviewer_id"]: reviewer["assigned_submission_ids"] for reviewer in reviewers}
 
-    with open(f"output/review-assignments{post_fix}.json", "w") as fp:
+    with open(output_dir / f"review-assignments{post_fix}.json", "w") as fp:
         fp.write(json.dumps(result, indent=4))
 
     for submission, assignments in zip(submissions, solution.T):
@@ -153,7 +154,7 @@ def format_and_output_result(df_reviewers, df_submissions, solution, post_fix=""
 
     result = {submission["submission_id"]: submission["assigned_reviewer_ids"] for submission in submissions}
 
-    with open(f"output/submission-assignments{post_fix}.json", "w") as fp:
+    with open(output_dir / f"submission-assignments{post_fix}.json", "w") as fp:
         fp.write(json.dumps(result, indent=4))
 
     return reviewers, submissions
