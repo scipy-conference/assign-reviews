@@ -320,7 +320,7 @@ con = duckdb.connect(database_file)
 
 # %%
 reviewer_assignments_final = {
-    item["reviewer_id"]: item["assigned_submission_ids"]
+    item["reviewer_id"]: item["assigned_submission_ids"].tolist()
     for item in con.sql("table reviewer_assignments_02")
     .df()[["reviewer_id", "assigned_submission_ids"]]
     .to_dict("records")
