@@ -19,29 +19,34 @@
 #     name: python
 #     nbconvert_exporter: python
 #     pygments_lexer: ipython3
-#     version: 3.12.1
+#     version: 3.12.2
 # ---
 
 # %%
+from pathlib import Path
+
 import duckdb
 from IPython import display
 
+# %%
+data_dir = Path.cwd() / ".." / "data"
+
 # Raw data to import
 raw_files = dict(
-    scipy_reviewers="../data/scipy_reviewers.csv",  # people who signed up as reviewers
-    pretalx_sessions="../data/sessions.csv",  # all proposal exported from pretalx
-    pretalx_speakers="../data/speakers.csv",  # all speakers exported from pretalx
-    pretalx_reviewers="../data/pretalx_reviewers.csv",  # all reviewers copy-pasted from pretalx
-    coi_reviewers="../data/scipy_coi_export.csv",  # all responses to the coi form
-    coi_authors="../data/coi_authors.csv",  # copy pasted values of author names from coi form
-    tracks="../data/tracks.csv",  # manually entered track IDs
+    scipy_reviewers=data_dir / "scipy_reviewers.csv",  # people who signed up as reviewers
+    pretalx_sessions=data_dir / "sessions.csv",  # all proposal exported from pretalx
+    pretalx_speakers=data_dir / "speakers.csv",  # all speakers exported from pretalx
+    pretalx_reviewers=data_dir / "pretalx_reviewers.csv",  # all reviewers copy-pasted from pretalx
+    coi_reviewers=data_dir / "scipy_coi_export.csv",  # all responses to the coi form
+    coi_authors=data_dir / "coi_authors.csv",  # copy pasted values of author names from coi form
+    tracks=data_dir / "tracks.csv",  # manually entered track IDs
 )
 
 # Output
-database_file = "../data/assign_reviews.db"
+database_file = data_dir / "assign_reviews.db"
 
 # %%
-con = duckdb.connect(database_file)
+con = duckdb.connect(str(database_file))
 
 
 # %%
@@ -141,7 +146,7 @@ df
 # Reviewers who signed up for pretalx but did not fill in COI
 
 # %%
-con = duckdb.connect(database_file)
+con = duckdb.connect(str(database_file))
 
 # %%
 df = con.sql(
@@ -359,7 +364,7 @@ select count(*), author from reviewers_with_coi_pre anti join pretalx_speakers o
 con.sql("table reviewers_with_tracks").df()
 
 # %%
-con.sql("select email as reviewer_id, list(track_id) as tracks from reviewers_with_tracks group by email")
+con.sql("select email as reviewer_id, list(track_ids) as tracks from reviewers_with_tracks group by email")
 
 # %% [markdown]
 # # Final tables for script
@@ -411,5 +416,3 @@ con.sql("table submissions_to_assign").df()
 
 # %%
 con.close()
-
-# %%
