@@ -3,7 +3,7 @@ name = "assign-reviews"
 version = "0.1.0"
 description = "Workflow to assign reviewers for the SciPy Conference"
 authors = [
-    "Guen Prawiroatmodjo <guenevere.p@gmail.com>",
+    "Guen Prawiroatmodjo",
     "Matthew Feickert <matthew.feickert@cern.ch>"
 ]
 channels = ["conda-forge"]
