@@ -11,8 +11,19 @@ from scipy.optimize import Bounds, LinearConstraint, milp
 
 DEBUG = True
 
+# NOTE: Track IDs are expected to be lowercase for ibis workflow (e.g. "tut", not "TUT").
+# The ibis pre-processing lowercases all strings automatically; the non-ibis
+# pre-processing does not, so run-assignments.py normalizes tracks to lowercase.
+# Previously these comparisons used "TUT" (uppercase), which silently didn't match
+# the lowercased track values from ibis pre-processing — the tutorial cost coefficient
+# was never applied and the assign-tutorials-to-anyone logic was never triggered.
+
 
 def create_objective_fun(df_reviewers, df_submissions, tutorial_coeff):
+    if not len(df_reviewers):
+        raise ValueError("No reviewers, likely due to inconsistency of track names")
+    if not len(df_submissions):
+        raise ValueError("No submissions, likely due to inconsistency of track names")
     reviewers = df_reviewers.to_dict("records")
     submissions = df_submissions.to_dict("records")
 
@@ -24,7 +35,7 @@ def create_objective_fun(df_reviewers, df_submissions, tutorial_coeff):
 
     # Make tutorials more expensive to review
     for n, reviewer in enumerate(reviewers):
-        objective_fun[n][df_submissions.track == "TUT"] *= tutorial_coeff
+        objective_fun[n][df_submissions.track == "tut"] *= tutorial_coeff
 
     objective_fun = objective_fun.flatten()
 
@@ -46,7 +57,7 @@ def create_lb_ub(reviewers, submissions, assign_tutorials_to_anyone):
             # each variable is assignment of a submission j to a reviewer i
             # everyone can be assigned a tutorial because we're short on tutorial reviewers
             in_domain = submission["track"] in reviewer["tracks"] or (
-                assign_tutorials_to_anyone and submission["track"] == "TUT"
+                assign_tutorials_to_anyone and submission["track"] == "tut"
             )
             no_conflict = submission["submission_id"] not in reviewer["conflicts_submission_ids"]
             ub[i, j] = in_domain and no_conflict
@@ -131,10 +142,10 @@ def format_and_output_result(df_reviewers, df_submissions, solution, post_fix=""
         reviewer["assigned_submission_ids"] = df_submissions.submission_id[assignments].values.tolist()
         if DEBUG:
             # Check how many tutorials everyone got
-            reviewer["is_tutorial"] = [t == "TUT" for t in df_submissions.track[assignments]]
+            reviewer["is_tutorial"] = [t == "tut" for t in df_submissions.track[assignments]]
             reviewer["num_tutorials"] = sum(reviewer["is_tutorial"])
             reviewer["num_submissions"] = len(reviewer["assigned_submission_ids"])
-            reviewer["tutorial_reviewer"] = "TUT" in reviewer["tracks"]
+            reviewer["tutorial_reviewer"] = "tut" in reviewer["tracks"]
             # Check that each reviewer actually was assigned a submission in their domain
             reviewer["track_in_domain"] = [t in reviewer["tracks"] for t in df_submissions.track[assignments]]
 

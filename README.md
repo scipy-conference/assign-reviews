@@ -28,7 +28,7 @@ First download the following files from Pretalx into the `data/` directory:
 Then run the notebooks as Python files in the following order with `pixi`
 
 ```
-$ pixi run pre-processing
+$ pixi run pre-processing # or pixi run pre-processing-ibis
 $ pixi run assignments
 ```
 

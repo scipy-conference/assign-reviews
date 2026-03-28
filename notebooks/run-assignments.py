@@ -61,7 +61,7 @@ df_reviewers = df_reviewers.assign(assigned_submission_ids=[[]] * len(df_reviewe
 len(df_submissions), len(df_reviewers)
 
 # %%
-df_submissions[df_submissions.track == "TUT"]
+df_submissions[df_submissions.track == "tut"]
 
 # %% [markdown]
 # ## Step 1. Assign tutorial reviewers
@@ -72,7 +72,7 @@ MAX_TUTORIALS_PER_PERSON = 5
 MIN_REVIEWERS_PER_TUTORIAL = 3
 MAX_REVIEWERS_PER_TUTORIAL = 4
 
-df_submissions_tutorials = df_submissions[df_submissions.track == "TUT"]
+df_submissions_tutorials = df_submissions[df_submissions.track == "tut"]
 
 solution = solve_milp(
     df_reviewers,
@@ -107,15 +107,13 @@ df = pd.DataFrame(submissions)
 df
 
 # %%
-con.sql(
-    """
+con.sql("""
 create or replace table submission_assignments_00 as
 select df_submissions.submission_id, df_submissions.author_ids, df_submissions.track,
 list_concat(df_submissions.assigned_reviewer_ids, df.assigned_reviewer_ids) as assigned_reviewer_ids
 from df_submissions
 left join df on df.submission_id = df_submissions.submission_id
-"""
-)
+""")
 con.sql("table submission_assignments_00")
 
 # %% [markdown]
@@ -131,7 +129,7 @@ MIN_REVIEWERS_PER_SUBMISSION = 2
 MAX_REVIEWERS_PER_SUBMISSION = 4
 
 df_reviewers_no_submissions = df_reviewers_with_tut[df_reviewers_with_tut.assigned_submission_ids.apply(len) == 0]
-df_submissions_no_tutorials = df_submissions[df_submissions.track != "TUT"]
+df_submissions_no_tutorials = df_submissions[df_submissions.track != "tut"]
 
 solution = solve_milp(
     df_reviewers_no_submissions,
@@ -158,16 +156,14 @@ df = pd.DataFrame(reviewers)[["reviewer_id", "assigned_submission_ids"]]
 df
 
 # %%
-con.sql(
-    """
+con.sql("""
 create or replace table reviewer_assignments_01 as
 select
     df_reviewers_with_tut.reviewer_id, tracks, conflicts_submission_ids,
     list_concat(df_reviewers_with_tut.assigned_submission_ids, df.assigned_submission_ids) as assigned_submission_ids
 from df_reviewers_with_tut
 left join df on df.reviewer_id = df_reviewers_with_tut.reviewer_id
-"""
-)
+""")
 con.sql("table reviewer_assignments_01")
 
 # %%
@@ -175,15 +171,13 @@ df = pd.DataFrame(submissions)
 df
 
 # %%
-con.sql(
-    """
+con.sql("""
 create or replace table submission_assignments_01 as
 select submission_assignments_00.submission_id, submission_assignments_00.author_ids, submission_assignments_00.track,
 list_concat(submission_assignments_00.assigned_reviewer_ids, df.assigned_reviewer_ids) as assigned_reviewer_ids
 from submission_assignments_00
 left join df on df.submission_id = submission_assignments_00.submission_id
-"""
-)
+""")
 con.sql("table submission_assignments_01")
 
 # %%
@@ -235,16 +229,14 @@ df = df[["reviewer_id", "assigned_submission_ids"]]
 df
 
 # %%
-con.sql(
-    """
+con.sql("""
 create or replace table reviewer_assignments_02 as
 select
     reviewer_assignments_01.reviewer_id, tracks, conflicts_submission_ids,
     list_concat(reviewer_assignments_01.assigned_submission_ids, df.assigned_submission_ids) as assigned_submission_ids
 from reviewer_assignments_01
 left join df on df.reviewer_id = reviewer_assignments_01.reviewer_id
-"""
-)
+""")
 con.sql("table reviewer_assignments_02")
 
 # %%
@@ -257,15 +249,13 @@ df = pd.DataFrame(submissions)
 df
 
 # %%
-con.sql(
-    """
+con.sql("""
 create or replace table submission_assignments_02 as
 select submission_assignments_01.submission_id, submission_assignments_01.author_ids, submission_assignments_01.track,
 list_concat(submission_assignments_01.assigned_reviewer_ids, df.assigned_reviewer_ids) as assigned_reviewer_ids
 from submission_assignments_01
 left join df on df.submission_id = submission_assignments_01.submission_id
-"""
-)
+""")
 con.sql("table submission_assignments_02")
 
 # %% [markdown]
@@ -276,46 +266,56 @@ con.sql("table submission_assignments_02")
 
 # %%
 con.sql(
-    """
-select string_agg(submission_id), count(track), len(assigned_reviewer_ids) from submission_assignments_02 group by len(assigned_reviewer_ids)
-"""  # noqa: E501
+    "select string_agg(submission_id), count(track), len(assigned_reviewer_ids) "
+    "from submission_assignments_02 group by len(assigned_reviewer_ids)"
 )
 
 # %% [markdown]
 # Step 1: Only tutorial assignments
 
 # %%
-con.sql(
-    """
-select string_agg(reviewer_id), count(reviewer_id), string_agg(tracks), len(assigned_submission_ids) from reviewer_assignments_00 group by len(assigned_submission_ids)
-"""  # noqa: E501
-)
+con.sql("table reviewer_assignments_00")
+
+# %%
+con.sql("""
+select count(reviewer_id), len(assigned_submission_ids) from reviewer_assignments_00 group by len(assigned_submission_ids)
+""")  # noqa: E501
 
 # %% [markdown]
 # Step 2: Add talks assignments
 
 # %%
-con.sql(
-    """
+con.sql("""
 select string_agg(reviewer_id), count(reviewer_id), string_agg(tracks), len(assigned_submission_ids) from reviewer_assignments_01 group by len(assigned_submission_ids)
-"""  # noqa: E501
-)
+""")  # noqa: E501
 
 # %% [markdown]
 # Step 3: Assign talks to tutorial reviewers
 
 # %%
-con.sql(
-    """
+con.sql("""
 select string_agg(reviewer_id), count(reviewer_id), string_agg(tracks), len(assigned_submission_ids) from reviewer_assignments_02 group by len(assigned_submission_ids)
-"""  # noqa: E501
-)
+""")  # noqa: E501
 
 # %%
 con.close()
 
 # %% [markdown]
-# ## Final export
+# ## Some additional ibis checks
+
+# %%
+import ibis  # noqa: E402
+from ibis import _  # noqa: E402, F401
+
+con = ibis.duckdb.connect(data_dir / "assign_reviews.db")
+
+t = con.tables.reviewer_assignments_02
+
+# Check that there are no intersections between assigned submission ids and conflicted submission ids
+assert t.conflicts_submission_ids.intersect(t.assigned_submission_ids).length().max().to_pandas() == 0
+
+# Check that there are no reviewers with more than 9 reviews assigned
+assert t.assigned_submission_ids.length().max().to_pandas() <= 9
 
 # %%
 database_file = data_dir / "assign_reviews.db"
@@ -334,3 +334,5 @@ with open(output_dir / "reviewer-assignments.json", "w") as fp:
 
 # %%
 con.close()
+
+# %%
